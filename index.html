@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>女神 400 速解</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .highlight {
+      background-color: #facc15 !important; /* 黃色 */
+      border: 2px solid black !important;
+    }
+    .choice-btn {
+      padding: 0.5rem 1rem;
+      margin: 0 0.25rem;
+      font-size: 1.5rem;
+      border: 1px solid #3b82f6;
+      border-radius: 0.5rem;
+      color: #3b82f6;
+      background-color: white;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .choice-btn:hover {
+      background-color: #3b82f6;
+      color: white;
+    }
+    .choice-btn.selected {
+      background-color: #3b82f6;
+      color: white;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+  <div class="max-w-3xl mx-auto mt-8 p-4 bg-white rounded shadow">
+    <h1 class="text-2xl font-bold mb-4">女神 400 速解小工具</h1>
+
+    <div id="output" class="text-3xl font-mono mb-6 h-12 text-center text-red-600"></div>
+
+    <div class="space-y-6">
+      <div>
+        <h2 class="text-xl font-semibold mb-2">全空</h2>
+        <div class="flex" id="group-empty">
+          <button class="choice-btn" data-group="empty" data-value="0">0</button>
+          <button class="choice-btn" data-group="empty" data-value="1">1</button>
+          <button class="choice-btn" data-group="empty" data-value="2">2</button>
+        </div>
+      </div>
+
+      <div>
+        <h2 class="text-xl font-semibold mb-2">隊長站左</h2>
+        <div class="flex" id="group-left">
+          <button class="choice-btn" data-group="left" data-value="0">0</button>
+          <button class="choice-btn" data-group="left" data-value="1">1</button>
+          <button class="choice-btn" data-group="left" data-value="2">2</button>
+        </div>
+      </div>
+
+      <div>
+        <h2 class="text-xl font-semibold mb-2">隊長站中</h2>
+        <div class="flex" id="group-center">
+          <button class="choice-btn" data-group="center" data-value="0">0</button>
+          <button class="choice-btn" data-group="center" data-value="1">1</button>
+          <button class="choice-btn" data-group="center" data-value="2">2</button>
+        </div>
+      </div>
+
+      <div>
+        <h2 class="text-xl font-semibold mb-2">隊長站右</h2>
+        <div class="flex" id="group-right">
+          <button class="choice-btn" data-group="right" data-value="0">0</button>
+          <button class="choice-btn" data-group="right" data-value="1">1</button>
+          <button class="choice-btn" data-group="right" data-value="2">2</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const mapping = {
+      "0011": "211", "0101": "121", "0110": "112",
+      "1011": "022", "1012": "031", "1021": "013",
+      "1101": "202", "1102": "301", "1110": "220",
+      "1120": "310", "1201": "103", "1210": "130",
+      "2112": "004", "2121": "040", "2211": "400"
+    };
+
+    const groups = ["empty", "left", "center", "right"];
+    let currentStep = 0;
+    let selections = {};
+
+    const output = document.getElementById("output");
+
+    function updateHighlight() {
+      groups.forEach((group, i) => {
+        const container = document.getElementById("group-" + group);
+        [...container.children].forEach(btn => {
+          btn.classList.remove("highlight");
+        });
+        if (i === currentStep) {
+          [...container.children].forEach(btn => {
+            btn.classList.add("highlight");
+          });
+        }
+      });
+    }
+
+    function updateSelection(group, value) {
+      selections[group] = value;
+
+      // UI update
+      const container = document.getElementById("group-" + group);
+      [...container.children].forEach(btn => {
+        if (btn.dataset.value === value) {
+          btn.classList.add("selected");
+        } else {
+          btn.classList.remove("selected");
+        }
+      });
+
+      if (currentStep < groups.length - 1) {
+        currentStep++;
+        updateHighlight();
+      } else {
+        showResult();
+      }
+    }
+
+    function showResult() {
+  const key = groups.map(g => selections[g]).join('');
+  const result = mapping[key];
+  if (result) {
+    output.textContent = result;
+  } else {
+    output.textContent = "❌ 無對應解答，請重新輸入";
+    setTimeout(resetAll, 50)//秒後自動重設
+  }
+}
+
+
+    function resetAll() {
+      selections = {};
+      currentStep = 0;
+      output.textContent = "";
+
+      groups.forEach(group => {
+        const container = document.getElementById("group-" + group);
+        [...container.children].forEach(btn => {
+          btn.classList.remove("selected");
+        });
+      });
+
+      updateHighlight();
+    }
+
+    document.addEventListener("keydown", e => {
+      if (["0", "1", "2"].includes(e.key)) {
+        updateSelection(groups[currentStep], e.key);
+      } else if (e.key === "Backspace") {
+        if (currentStep > 0) {
+          currentStep--;
+          const group = groups[currentStep];
+          delete selections[group];
+          const container = document.getElementById("group-" + group);
+          [...container.children].forEach(btn => btn.classList.remove("selected"));
+          updateHighlight();
+          output.textContent = "";
+        }
+      } else if (e.key === "Enter") {
+        resetAll();
+      }
+    });
+
+    // Click handler
+    document.querySelectorAll(".choice-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const group = btn.dataset.group;
+        const value = btn.dataset.value;
+        const index = groups.indexOf(group);
+        currentStep = index;
+        updateSelection(group, value);
+      });
+    });
+
+    updateHighlight();
+  </script>
+</body>
+</html>
