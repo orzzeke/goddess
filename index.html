@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>女神 400 速解</title>
+  <title>女神 400</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     .highlight {
@@ -33,13 +33,13 @@
 </head>
 <body class="bg-gray-100 text-gray-800">
   <div class="max-w-3xl mx-auto mt-8 p-4 bg-white rounded shadow">
-    <h1 class="text-2xl font-bold mb-4">女神 400 速解小工具</h1>
+    <h1 class="text-2xl font-bold mb-4">女神 400 小工具</h1>
 
     <div id="output" class="text-3xl font-mono mb-6 h-12 text-center text-red-600"></div>
 
     <div class="space-y-6">
       <div>
-        <h2 class="text-xl font-semibold mb-2">全空</h2>
+        <h2 class="text-xl font-semibold mb-2">平台全空</h2>
         <div class="flex" id="group-empty">
           <button class="choice-btn" data-group="empty" data-value="0">0</button>
           <button class="choice-btn" data-group="empty" data-value="1">1</button>
@@ -133,7 +133,7 @@
     output.textContent = result;
   } else {
     output.textContent = "❌ 無對應解答，請重新輸入";
-    setTimeout(resetAll, 50)//秒後自動重設
+    setTimeout(resetAll, 80)//秒後自動重設
   }
 }
 
